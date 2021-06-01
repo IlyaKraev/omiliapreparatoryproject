@@ -19,8 +19,11 @@ public class AdvancedValidation {
     public void initiateAdvancedDemonstration(String number) {
         List<ArrayList> results = new ArrayList<>();
 
+        // Interpret the number provided once
         List<ArrayList> interpretations = ambiguityInterpretation(number);
 
+        // Nested loop iterates through the interpreted sequences, each time decreasing the amount of sequences examined
+        // by an amount determined by the external loop, giving all possible combinations
         results.addAll(interpretations);
         for (int i = 0; i < number.split(" ").length; i++) {
             for (int j = 0; j < number.split(" ").length - i; j++) {
@@ -34,10 +37,12 @@ public class AdvancedValidation {
             }
         }
 
+        // Clear resulting list of duplicate values
         ArrayList<ArrayList> uniqueResults = removeDuplicates(results);
 
         ArrayList<String> stringifiedNumbers = new ArrayList<>();
 
+        // Take all unique numbers adn make them into Strings
         for (ArrayList result : uniqueResults) {
             String stringifiedNumber = "";
             for (int i = 0; i < result.size(); i++) {
@@ -46,6 +51,7 @@ public class AdvancedValidation {
             stringifiedNumbers.add(stringifiedNumber);
         }
 
+        // Prepare resulting list and display it to the user
         ArrayList<String> validatedNumbers = validateNumbers(stringifiedNumbers);
 
         System.out.println("You have input: " + number + "\n");
@@ -58,29 +64,26 @@ public class AdvancedValidation {
         Menu menu = new Menu();
     }
 
+    // This method iterates through all the sequences of a given number and searches for ambiguities to try and interpret
     public List<ArrayList> ambiguityInterpretation(String number) {
         List<ArrayList> results = new ArrayList<>();
 
         String[] arrayOfDigits = number.split(" ");
         ArrayList<String> arrayListOfDigits = new ArrayList<>(Arrays.asList(arrayOfDigits));
 
-
-        System.out.println("You have input: " + arrayListOfDigits.toString());
-        //check number of digits
-
+        // Add the input sequences to an arrayList
         results.add(arrayListOfDigits);
+        // Iterate through the numbers
         for (int i = 0; i < arrayListOfDigits.size(); i++) {
 
             String following;
             String current;
 
-            System.out.println("THE NUMBER EXAMINED IS " + arrayListOfDigits.get(i));
-
-            // Join X0-X -> XX  else  Split XX -> X0-X
             if (arrayListOfDigits.get(i).length() == 2) {
                 if (arrayListOfDigits.get(i).endsWith("0") && i != arrayListOfDigits.size() - 1 && arrayListOfDigits.get(i + 1).length() == 1) {
-                    // Important to check that the algorithm doesn't interpret 11 as 10-1 or 12 as 10-2 and vice versa, since there's no ambiguity for this case in Greek
-                    if (!arrayListOfDigits.get(i).startsWith("1") && !arrayListOfDigits.get(i + 1).startsWith("1") && !arrayListOfDigits.get(i + 1).startsWith("2")) {
+                    // Join X0-X -> XX
+                    // Important to check that the algorithm doesn't interpret 1X as 10-X or 10-X as 1X, since there's no ambiguity for this case in English
+                    if (!arrayListOfDigits.get(i).startsWith("10") && !arrayListOfDigits.get(i + 1).startsWith("1") && !arrayListOfDigits.get(i + 1).startsWith("2")) {
                         following = arrayListOfDigits.get(i + 1);
 
                         ArrayList<String> newCombinationInstance = new ArrayList<>(arrayListOfDigits);
@@ -94,7 +97,7 @@ public class AdvancedValidation {
                     }
 
                 } else if (!arrayListOfDigits.get(i).endsWith("0") && (!arrayListOfDigits.get(i).equals("11") && !arrayListOfDigits.get(i).equals("12")) &&
-                        !(arrayListOfDigits.get(i).equals("69") && (i == 0 || i == 3))) {
+                        !(i == 0 || i == 3)) { // Splits XX -> XO-X
                     current = arrayListOfDigits.get(i);
 
                     ArrayList<String> newCombinationInstance = new ArrayList<>(arrayListOfDigits);
@@ -111,8 +114,8 @@ public class AdvancedValidation {
                     if (arrayListOfDigits.get(i + 1).length() == 2) {
                         if (arrayListOfDigits.get(i + 1).endsWith("0")) {
                             // Join X00 + X0 + X
-                            // Also check that it doesn't turn 10-1 into 11 and 10-2 into 12
-                            if (arrayListOfDigits.get(i + 2).length() == 1 && !arrayListOfDigits.get(i + 1).equals("10") && (!arrayListOfDigits.get(i + 2).equals("1") && !arrayListOfDigits.get(i + 2).equals("2"))) {
+                            // Also check that it doesn't turn 10-X into 1X or 10-X into 1X
+                            if (arrayListOfDigits.get(i + 2).length() == 1 && !arrayListOfDigits.get(i + 1).equals("10")) {
 
                                 String secondFollowing = arrayListOfDigits.get(i + 2);
 
@@ -153,7 +156,7 @@ public class AdvancedValidation {
                             results.add(newCombinationInstance);
 
                         }
-                    } else if (arrayListOfDigits.get(i + 1).length() == 1) {
+                    } else if (arrayListOfDigits.get(i + 1).length() == 1) { // Join X00 + X
                         following = arrayListOfDigits.get(i + 1);
                         current = arrayListOfDigits.get(i);
 
@@ -164,7 +167,7 @@ public class AdvancedValidation {
                         newCombinationInstance.remove(i + 1);
                         results.add(newCombinationInstance);
                     }
-                } else if (arrayListOfDigits.get(i).charAt(1) == '0') {
+                } else if (arrayListOfDigits.get(i).charAt(1) == '0') { // Split X0X into X00 + X
                     current = arrayListOfDigits.get(i);
                     String hundred = String.valueOf(current.charAt(0)).concat("00");
                     String singular = String.valueOf(current.charAt(2));
@@ -195,6 +198,7 @@ public class AdvancedValidation {
         return results;
     }
 
+    // This removes any duplicates that the interpretation algorithm could have produced
     public static ArrayList<ArrayList> removeDuplicates(List<ArrayList> list) {
 
         ArrayList<ArrayList> listOfUniques = new ArrayList<>();
@@ -208,6 +212,7 @@ public class AdvancedValidation {
         return listOfUniques;
     }
 
+    // This checks the final set of resulting numbers, adding either a VALID or an INVALID tag at the end
     public static ArrayList<String> validateNumbers(ArrayList<String> numbers) {
         ArrayList<String> validatedList = new ArrayList<>();
         for (String number : numbers) {
