@@ -1,39 +1,71 @@
 package base;
 
+import interfaces.IValidate;
 import menu.Util;
+import models.PhoneNumber;
 
-import java.util.Scanner;
-
-public class BaseValidation {
+public class BaseValidation implements IValidate {
 
     public BaseValidation(){
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Welcome to the Base part of the exercise.\nPlease input a phone number, in sequences of up to 3 numbers at a time, separated by space, then press enter.");
-        initiateBaseDemonstration(sc.nextLine());
+
     }
 
-    public void initiateBaseDemonstration(String number) {
-        String trimmedNumber = number.replace(" ","");
-        System.out.println(trimmedNumber);
-        if(trimmedNumber.length()==10){
-            if (trimmedNumber.startsWith("2")||trimmedNumber.startsWith("69")){
-                System.out.println("The number "+trimmedNumber+" is VALID");
-
-            } else {
-                System.out.println("The number "+trimmedNumber+" is INVALID");
-            }
-        } else if (trimmedNumber.length()==14){
-            if (trimmedNumber.startsWith("00302")||trimmedNumber.startsWith("003069")){
-                System.out.println("The number "+trimmedNumber+" is VALID");
-
-            } else {
-                System.out.println("The number "+trimmedNumber+" is INVALID");
-
-            }
-        } else {
-            System.out.println("The number "+trimmedNumber+" is INVALID");
-        }
+    public void process(String number){
         Util util = new Util();
+        checkValidityOfUtteranceNodes(number, util);
+
+        String trimmedNumber = number.replace(" ","");
+        objectifyNumber(trimmedNumber);
         util.pressAnyKeyToContinue();
     }
+
+    public PhoneNumber objectifyNumber(String number){
+        PhoneNumber phoneNumber = new PhoneNumber();
+
+        phoneNumber.setDigits(number);
+
+        phoneNumber.setType(checkType(phoneNumber));
+        phoneNumber.setLength(checkLength(phoneNumber));
+        phoneNumber.setInternational(checkIfInternational(phoneNumber));
+        phoneNumber.setValid(checkPhoneNumberValidity(phoneNumber));
+
+        return phoneNumber;
+    }
+
+    public void checkValidityOfUtteranceNodes(String number, Util util){
+        String[] arrayOfDigits = number.split(" ");
+        for (String cell: arrayOfDigits) {
+            if(cell.length()>3){
+                System.out.println("Please make sure to enter a number in a format that mimics voice-to-text; in sequences of up to 3 digits at a time, separated by space. ");
+                util.pressAnyKeyToContinue();
+            }
+        }
+    }
+
+    public boolean checkIfInternational(PhoneNumber number){
+        if(number.getDigits().startsWith("0030")){
+            return true;
+        } else return false;
+    }
+
+    public String checkType(PhoneNumber number){
+        if(number.getDigits().startsWith("69")||number.getDigits().startsWith("003069")){
+            return "Mobile";
+        } else if (number.getDigits().startsWith("2")||number.getDigits().startsWith("00302")){
+            return "Landline";
+        } else return "Undefined";
+    }
+
+    public int checkLength(PhoneNumber number){
+         return number.getDigits().length();
+    }
+
+    public boolean checkPhoneNumberValidity(PhoneNumber number) {
+    if (!number.isInternational()&&number.getLength()==10&&(number.getType().equals("Landline")||number.getType().equals("Mobile"))){
+        return true;
+    } else if (number.isInternational()&&number.getLength()==14&&(number.getType().equals("Landline")||number.getType().equals("Mobile"))){
+        return true;
+    } else return false;
+    }
+
 }

@@ -1,5 +1,7 @@
 package advanced;
 
+import base.BaseValidation;
+import interfaces.IValidate;
 import menu.Menu;
 import menu.Util;
 
@@ -8,12 +10,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-public class AdvancedValidation {
+public class AdvancedValidation extends BaseValidation implements IValidate {
 
     public AdvancedValidation() {
         Scanner sc = new Scanner(System.in);
-        System.out.println("Welcome to the advanced part of the exercise.\nPlease input a phone number, in sequences of up to 3 numbers at a time, separated by space, then press enter.");
         initiateAdvancedDemonstration(sc.nextLine());
+    }
+
+    public void process(String number){
+
     }
 
     public void initiateAdvancedDemonstration(String number) {
@@ -61,7 +66,6 @@ public class AdvancedValidation {
         }
         Util util = new Util();
         util.pressAnyKeyToContinue();
-        Menu menu = new Menu();
     }
 
     // This method iterates through all the sequences of a given number and searches for ambiguities to try and interpret
@@ -70,6 +74,12 @@ public class AdvancedValidation {
 
         String[] arrayOfDigits = number.split(" ");
         ArrayList<String> arrayListOfDigits = new ArrayList<>(Arrays.asList(arrayOfDigits));
+
+
+
+
+
+
 
         // Add the input sequences to an arrayList
         results.add(arrayListOfDigits);
@@ -231,3 +241,20 @@ public class AdvancedValidation {
     }
 
 }
+
+
+
+/*
+*  Take input and split it into an array
+*  Join the array into a single number, save as String
+*  Check String length
+*  Check that it starts correctly
+*  If international code present, determine which array indexes contain it, otherwise start the algorithm
+*
+* Take array, save string
+* create copy of array
+*
+*
+*
+*
+* */
